@@ -8,14 +8,14 @@ import (
 	"github.com/ghodss/yaml"
 )
 
-var Conf struct {
+type Conf struct {
 	Service struct {
+		Addr string `yaml:"addr"`
 		Name string `yaml:"name"`
-		Port string `yaml:"port"`
 	}
 	// todo:: may be array
 	Mysql struct {
-		Address  string `yaml:"address"`
+		Addr     string `yaml:"addr"`
 		Port     int    `yaml:"port"`
 		DbName   string `yaml:"db_name"`
 		UserName string `yaml:"username"`
@@ -37,6 +37,8 @@ var Conf struct {
 	Extra interface{} `yaml:"extra"`
 }
 
+var C Conf
+
 func InitConf(path string, extra interface{}) {
 	if _, err := os.Stat(path); err != nil {
 		panic("find yaml fail: " + err.Error())
@@ -46,8 +48,8 @@ func InitConf(path string, extra interface{}) {
 	if err != nil {
 		panic("read yaml fail: " + err.Error())
 	}
-	Conf.Extra = extra
-	err = yaml.Unmarshal(bts, &Conf)
+	C.Extra = extra
+	err = yaml.Unmarshal(bts, &C)
 	if err != nil {
 		log.Panicf("yaml unmarshal fail|err:%s|row:%s|", err, bts)
 		return

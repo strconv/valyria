@@ -22,7 +22,7 @@ func init() {
 
 func main() { 
     // 公共配置信息 
-    fmt.Printf("service_name: %s", config.Conf.Service)
+    fmt.Printf("service_name: %s", config.Conf.Service.Name)
     // 自定义配置信息
     fmt.Println("token: ", Extra.Token, "app_key: ", Extra.AppKey)
 }
@@ -33,11 +33,11 @@ func main() {
 # 服务信息
 service:
   name: user.profile
-  port: :6890
+  addr: 127.0.0.1:6890
 
 # mysql
 mysql:
-  address : 192.168.0.162
+  addr: 192.168.0.162
   port : 3306
   db_name : rbac
   username : root
