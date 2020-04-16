@@ -8,3 +8,18 @@
 封装好常用的 路由、日志、Client、dao 等模块，让开发更专注于业务逻辑
 
 在业务开发的过程中遇到的问题，会逐渐下沉基础框架中
+
+# 排期
+- 2020.4.14
+    - log、conf 100%
+- 2020.4.15
+    - server
+        - 基础模块     100%
+        - 整合 consul 100%
+        - 整合 gin    70%
+- 2020.4.16
+    - server
+        - 接入 trace 全链路跟踪
+        - 接入 swagger
+- todo
+    client、gorm、redigo、jwt、自动部署
