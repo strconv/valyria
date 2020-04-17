@@ -1,6 +1,7 @@
 package log
 
 import (
+	"context"
 	"io"
 	"time"
 
@@ -9,25 +10,55 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+const (
+	TraceIDKey = "trace_id"
+	//UserIDKey      = "uid"
+	//ServiceNameKey = "service_name"
+)
+
 var logger *zap.SugaredLogger
 
-func InitLog(level string) {
-	config := *logConf()
-	encoder := zapcore.NewConsoleEncoder(config)
+var encoderConf = zapcore.EncoderConfig{
+	MessageKey:    "msg",
+	LevelKey:      "level",
+	TimeKey:       "time",
+	NameKey:       "logger",
+	CallerKey:     "caller",
+	StacktraceKey: "stack",
+	LineEnding:    zapcore.DefaultLineEnding,
+	EncodeLevel:   zapcore.CapitalColorLevelEncoder,
+	EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
+		enc.AppendString(t.Format("2006-01-02 15:04:05.000"))
+	},
+	EncodeDuration: zapcore.StringDurationEncoder,
+	EncodeCaller:   zapcore.ShortCallerEncoder,
+	EncodeName:     zapcore.FullNameEncoder,
+}
 
-	infoLvl, warnLvl := setLevel(level)
+func Init(level string) {
+	encoder := zapcore.NewConsoleEncoder(encoderConf)
+	infoLvl, debugLvl, warnLvl := setLevel(level)
 	core := zapcore.NewTee(
 		zapcore.NewCore(encoder, zapcore.AddSync(getWriter("info")), infoLvl),
+		zapcore.NewCore(encoder, zapcore.AddSync(getWriter("debug")), debugLvl),
 		zapcore.NewCore(encoder, zapcore.AddSync(getWriter("error")), warnLvl),
-		// console
-		//zapcore.NewCore(zapcore.NewConsoleEncoder(config),
-		//	zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout)), logLevel),
 	)
 	logger = zap.New(
 		core,
-		zap.AddCaller(), // 文件名和行数
+		zap.AddCaller(), // 堆栈跟踪
 		zap.AddStacktrace(zap.WarnLevel),
 	).Sugar()
+	logger.Info("log init ...")
+}
+
+// trace id
+func For(ctx context.Context, args ...interface{}) *zap.SugaredLogger {
+	logger = logger.With(zap.Field{
+		Key:    TraceIDKey,
+		Type:   zapcore.StringType,
+		String: extraTraceID(ctx),
+	})
+	return logger
 }
 
 func getWriter(level string) io.Writer {
@@ -40,24 +71,7 @@ func getWriter(level string) io.Writer {
 	})
 }
 
-func logConf() *zapcore.EncoderConfig {
-	return &zapcore.EncoderConfig{
-		MessageKey:  "msg",
-		LevelKey:    "level",
-		CallerKey:   "file",
-		TimeKey:     "ts",
-		EncodeLevel: zapcore.CapitalLevelEncoder, // 级别转换成大写
-		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendString(t.Format("2006-01-02 15:04:05"))
-		},
-		EncodeCaller: zapcore.ShortCallerEncoder,
-		EncodeDuration: func(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendInt64(int64(d) / 1000000)
-		},
-	}
-}
-
-func setLevel(level string) (zap.LevelEnablerFunc, zap.LevelEnablerFunc) {
+func setLevel(level string) (zap.LevelEnablerFunc, zap.LevelEnablerFunc, zap.LevelEnablerFunc) {
 	logLevel := zap.DebugLevel
 	switch level {
 	case "debug":
@@ -76,51 +90,27 @@ func setLevel(level string) (zap.LevelEnablerFunc, zap.LevelEnablerFunc) {
 		logLevel = zap.InfoLevel
 	}
 	// 实现两个判断日志等级的interface  自定义级别展示
-	infoLevel := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
-		return level < zapcore.WarnLevel && level >= logLevel
+	debugLvl := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		if logLevel >= zapcore.InfoLevel {
+			return false
+		}
+		return logLevel.Enabled(lvl)
 	})
-	warnLevel := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
+	infoLvl := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
+		return level == zapcore.InfoLevel && level >= logLevel
+	})
+	errorLvl := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
 		return level >= zapcore.WarnLevel && level >= logLevel
 	})
-	return infoLevel, warnLevel
+	return infoLvl, debugLvl, errorLvl
 }
 
-func Debug(v ...interface{}) {
-	logger.Debug(v...)
-}
-
-func Info(v ...interface{}) {
-	logger.Info(v...)
-}
-
-func Warn(v ...interface{}) {
-	logger.Warn(v...)
-}
-
-func Error(v ...interface{}) {
-	logger.Error(v...)
-}
-
-func Fatal(v ...interface{}) {
-	logger.Fatal(v...)
-}
-
-func Debugf(format string, v ...interface{}) {
-	logger.Debugf(format, v...)
-}
-
-func Infof(format string, v ...interface{}) {
-	logger.Infof(format, v...)
-}
-
-func Warnf(format string, v ...interface{}) {
-	logger.Warnf(format, v...)
-}
-
-func Errorf(format string, v ...interface{}) {
-	logger.Errorf(format, v...)
-}
-
-func Fatalf(format string, v ...interface{}) {
-	logger.Fatalf(format, v...)
+func extraTraceID(ctx context.Context) string {
+	v := ctx.Value(TraceIDKey)
+	if v != nil {
+		if s, ok := v.(string); ok {
+			return s
+		}
+	}
+	return ""
 }

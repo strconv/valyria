@@ -9,7 +9,7 @@ import "github.com/strconv/valyria/log"
 
 func init() {
     // info、debug、error
-	log.InitLog("info")
+	log.Init("info")
 }
 
 func main() {
