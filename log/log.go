@@ -5,6 +5,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/strconv/valyria/trace"
+
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -53,7 +55,7 @@ func Init(level string) {
 
 // trace id
 func For(ctx context.Context, args ...interface{}) *zap.SugaredLogger {
-	tid := extraTraceID(ctx)
+	tid := trace.ExtraTraceID(ctx, TraceIDKey)
 	var fields []interface{}
 	if len(tid) != 0 {
 		fields = make([]interface{}, 0, len(args)+2)
@@ -107,16 +109,6 @@ func setLevel(level string) (zap.LevelEnablerFunc, zap.LevelEnablerFunc, zap.Lev
 		return lvl >= zapcore.WarnLevel
 	})
 	return infoLvl, debugLvl, errorLvl
-}
-
-func extraTraceID(ctx context.Context) string {
-	v := ctx.Value(TraceIDKey)
-	if v != nil {
-		if s, ok := v.(string); ok {
-			return s
-		}
-	}
-	return ""
 }
 
 func Info(v ...interface{}) {

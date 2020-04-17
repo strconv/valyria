@@ -1,27 +1,35 @@
 ## 日志组件
 对 go.uber.org/zap 的封装，按照时间和日志类型分割
 
+## feature
+- 设置日志级别
+- 集成 trace ID
+
 ## usage
 ```go
 package main
 
-import "github.com/strconv/valyria/log"
+import (
+	"context"
+
+	"github.com/strconv/valyria/log"
+)
 
 func init() {
-    // info、debug、error
-	log.Init("info")
+	// info、debug、error
+	log.Init("debug")
 }
 
 func main() {
-	log.Errorf("an error log |err:%s|", "have fun! ")
+	log.Debug("an debug log")
+	log.For(context.Background(), "func", "log_test").Infof("an info log |msg:%s|", "have fun! ")
+	log.Error("an error log")
 }
 
 ```
 
 ## todo
-- debug 单独输出
 - 打印频率 day、hour
-- 添加 trace
 - ...
 
 ## 参考

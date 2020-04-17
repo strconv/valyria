@@ -3,7 +3,10 @@ package server
 import (
 	"time"
 
+	"github.com/strconv/valyria/trace"
+
 	"github.com/gin-gonic/gin"
+	"github.com/micro/cli"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/web"
 	"github.com/micro/go-plugins/registry/consul"
@@ -19,6 +22,8 @@ func NewHTTP() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	// router.Use() //middleware trace、swagger、
+	// 中间件
+	router.Use(trace.TracerWrapper) // trace 包装
 	return router
 }
 
@@ -38,7 +43,11 @@ func InitHTTP(conf *config.Conf, handler *gin.Engine) {
 	)
 
 	err := service.Init(
-	// trace
+		web.Action(func(context *cli.Context) {
+			// trace
+			trace.Init(50, config.C.Service.Name, config.C.Jaeger)
+			// ...
+		}),
 	)
 
 	if err != nil {
