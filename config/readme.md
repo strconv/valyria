@@ -17,7 +17,7 @@ var Extra struct {
 }
 
 func init() {
-    config.InitConf("./conf.yaml", &Extra)
+    config.Init("./conf.yaml", &Extra)
 }
 
 func main() { 
@@ -32,12 +32,13 @@ func main() {
 ```yaml
 # 服务信息
 service:
-  name: user.profile
-  addr: 127.0.0.1:6890
+  name: user.account
+  addr: :10086
+  logLevel: info # 日志等级
 
 # mysql
 mysql:
-  addr: 192.168.0.162
+  addr: 127.0.0.1
   port : 3306
   db_name : rbac
   username : root
@@ -45,14 +46,13 @@ mysql:
 
 # redis 配置
 redis:
-  host: 192.168.0.162
+  host: 127.0.0.1
   port: 6379
   auth: abc123
   db:  0
 
-
 # consul 配置
-consul: 192.168.1.119:8300
+consul: 127.0.0.1:8500
 
 # jaeger 配置
 jaeger:  127.0.0.1:6831

@@ -2,7 +2,6 @@ package config
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
 
 	"github.com/ghodss/yaml"
@@ -12,7 +11,9 @@ type Conf struct {
 	Service struct {
 		Addr string `yaml:"addr"`
 		Name string `yaml:"name"`
-	}
+		Log  string `json:"log"`
+	} `yaml:"server"`
+
 	// todo:: may be array
 	Mysql struct {
 		Addr     string `yaml:"addr"`
@@ -39,7 +40,7 @@ type Conf struct {
 
 var C Conf
 
-func InitConf(path string, extra interface{}) {
+func Init(path string, extra interface{}) {
 	if _, err := os.Stat(path); err != nil {
 		panic("find yaml fail: " + err.Error())
 	}
@@ -51,7 +52,6 @@ func InitConf(path string, extra interface{}) {
 	C.Extra = extra
 	err = yaml.Unmarshal(bts, &C)
 	if err != nil {
-		log.Panicf("yaml unmarshal fail|err:%s|row:%s|", err, bts)
-		return
+		panic("yaml unmarshal fail: " + err.Error())
 	}
 }
