@@ -37,28 +37,32 @@ var encoderConf = zapcore.EncoderConfig{
 
 func Init(level string) {
 	encoder := zapcore.NewConsoleEncoder(encoderConf)
-	infoLvl, debugLvl, warnLvl := setLevel(level)
+	infoLvl, debugLvl, errorLvl := setLevel(level)
 	core := zapcore.NewTee(
 		zapcore.NewCore(encoder, zapcore.AddSync(getWriter("info")), infoLvl),
 		zapcore.NewCore(encoder, zapcore.AddSync(getWriter("debug")), debugLvl),
-		zapcore.NewCore(encoder, zapcore.AddSync(getWriter("error")), warnLvl),
+		zapcore.NewCore(encoder, zapcore.AddSync(getWriter("error")), errorLvl),
 	)
 	logger = zap.New(
 		core,
-		zap.AddCaller(), // 堆栈跟踪
-		zap.AddStacktrace(zap.WarnLevel),
+		zap.AddCaller(),
+		zap.AddStacktrace(zap.PanicLevel), // 堆栈跟踪
 	).Sugar()
 	logger.Info("log init ...")
 }
 
 // trace id
 func For(ctx context.Context, args ...interface{}) *zap.SugaredLogger {
-	logger = logger.With(zap.Field{
-		Key:    TraceIDKey,
-		Type:   zapcore.StringType,
-		String: extraTraceID(ctx),
-	})
-	return logger
+	tid := extraTraceID(ctx)
+	var fields []interface{}
+	if len(tid) != 0 {
+		fields = make([]interface{}, 0, len(args)+2)
+		fields = append(fields, TraceIDKey, tid)
+	} else {
+		fields = make([]interface{}, 0, len(args))
+	}
+	fields = append(fields, args...)
+	return logger.With(fields...)
 }
 
 func getWriter(level string) io.Writer {
@@ -90,17 +94,17 @@ func setLevel(level string) (zap.LevelEnablerFunc, zap.LevelEnablerFunc, zap.Lev
 		logLevel = zap.InfoLevel
 	}
 	// 实现两个判断日志等级的interface  自定义级别展示
+	infoLvl := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl == zapcore.InfoLevel
+	})
 	debugLvl := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if logLevel >= zapcore.InfoLevel {
 			return false
 		}
 		return logLevel.Enabled(lvl)
 	})
-	infoLvl := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
-		return level == zapcore.InfoLevel && level >= logLevel
-	})
-	errorLvl := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
-		return level >= zapcore.WarnLevel && level >= logLevel
+	errorLvl := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.WarnLevel
 	})
 	return infoLvl, debugLvl, errorLvl
 }
@@ -113,4 +117,44 @@ func extraTraceID(ctx context.Context) string {
 		}
 	}
 	return ""
+}
+
+func Info(v ...interface{}) {
+	logger.Info(v...)
+}
+
+func Debug(v ...interface{}) {
+	logger.Warn(v...)
+}
+
+func Warn(v ...interface{}) {
+	logger.Warn(v...)
+}
+
+func Error(v ...interface{}) {
+	logger.Error(v...)
+}
+
+func Fatal(v ...interface{}) {
+	logger.Fatal(v...)
+}
+
+func Debugf(format string, v ...interface{}) {
+	logger.Debugf(format, v...)
+}
+
+func Infof(format string, v ...interface{}) {
+	logger.Infof(format, v...)
+}
+
+func Warnf(format string, v ...interface{}) {
+	logger.Warnf(format, v...)
+}
+
+func Errorf(format string, v ...interface{}) {
+	logger.Errorf(format, v...)
+}
+
+func Fatalf(format string, v ...interface{}) {
+	logger.Fatalf(format, v...)
 }
