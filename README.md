@@ -19,10 +19,10 @@
     - server
         - 基础模块     100%
         - 整合 consul 100%
-        - 整合 gin    70%
+        - 整合 gin    100%
 - 2020.4.16
     - server
-        - 接入 trace 全链路跟踪
-        - 接入 swagger
+        - 接入 trace 全链路跟踪 100%
+        - 接入 swagger        0%
 - todo
     client、gorm、redigo、jwt、自动部署
