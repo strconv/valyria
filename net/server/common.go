@@ -7,9 +7,10 @@ import (
 )
 
 const (
-	SUCCESS_CODE  = 200 // 成功
-	INVALID_PARAM = 499 // 参数错误
-	SYS_ERROR     = 500 // 系统错误
+	SUCCESS_CODE  = 200  // 成功
+	INVALID_PARAM = 499  // 参数错误
+	SYS_ERROR     = 500  // 系统错误
+	JWT_FAIL      = 4001 // JWT错误
 )
 
 type ApiResult struct {
