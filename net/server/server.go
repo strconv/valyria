@@ -3,6 +3,8 @@ package server
 import (
 	"time"
 
+	"github.com/strconv/valyria/middleware"
+
 	"github.com/strconv/valyria/trace"
 
 	"github.com/gin-gonic/gin"
@@ -22,8 +24,9 @@ func NewHTTP() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	// router.Use() //middleware trace、swagger、
-	// 中间件
-	router.Use(trace.TracerWrapper) // trace 包装
+	// 公共中间件
+	router.Use(middleware.TracerWrapper) // trace 包装
+	// todo:: swagger、ginLog
 	return router
 }
 
