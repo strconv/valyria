@@ -3,6 +3,7 @@ package config
 import (
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/ghodss/yaml"
 )
@@ -18,7 +19,7 @@ type Conf struct {
 	Mysql struct {
 		Addr     string `yaml:"addr"`
 		Port     int    `yaml:"port"`
-		DbName   string `yaml:"db_name"`
+		DBName   string `yaml:"dbName"`
 		UserName string `yaml:"username"`
 		Password string `yaml:"password"`
 	} `yaml:"mysql"`
@@ -30,6 +31,11 @@ type Conf struct {
 		Auth string `yaml:"auth"`
 		Db   int    `yaml:"db"`
 	} `yaml:"redis"`
+
+	JWT struct {
+		Secret  string        `yaml:"secret"`
+		Timeout time.Duration `yaml:"timeout"`
+	} `yaml:"jwt"`
 
 	Consul string `yaml:"consul"`
 
