@@ -3,14 +3,22 @@
 
 毕设系统的基础框架
 
-基于 go-micro，整合 consul、go-gin、gorm、redigo等组件
+基于 go-micro，整合 consul、go-gin、gorm、redigo、trace 等组件
 
-封装好常用的 路由、日志、Client、dao 等模块，让开发更专注于业务逻辑
+封装好常用的 路由、日志、Client、dao 等模块，让开发更专注于业务交付
 
 在业务开发的过程中遇到的问题，会逐渐下沉基础框架中
 
 # Features
-
+- 服务注册: consul
+- 消息队列: kafka
+- 缓存：redis
+- 链路追踪: jaeger trace
+- 服务间通信: grpc
+- 自动化文档: swagger
+- casbin: 权限管理
+- docker-compose 集群启动
+- 自定义参数验证器
 
 # 排期
 - 2020.4.14
@@ -25,4 +33,5 @@
         - 接入 trace 全链路跟踪 100%
         - 接入 swagger        0%
 - todo
-    client、gorm、redigo、jwt、自动部署
+    jwt、自动部署、单元测试、CI/CD、监控
+
