@@ -36,11 +36,18 @@ service:
   addr: :10086
   logLevel: info # 日志等级
 
-# mysql
+# consul 配置
+consul: 127.0.0.1:8500
+
+# jaeger 配置
+jaeger:  127.0.0.1:6831
+
+# mysql 
+# 非必填（若填入，需要有mysql环境支持）
 mysql:
   addr: 127.0.0.1
   port : 3306
-  db_name : rbac
+  dbName : rbac
   username : root
   password : gogocuri
 
@@ -51,11 +58,10 @@ redis:
   auth: abc123
   db:  0
 
-# consul 配置
-consul: 127.0.0.1:8500
-
-# jaeger 配置
-jaeger:  127.0.0.1:6831
+# JWT
+jwt:
+  secret: "xxxxxxx"
+  timeout: 120 # 分钟
 
 # 自定义
 extra:
