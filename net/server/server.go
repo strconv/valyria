@@ -3,16 +3,14 @@ package server
 import (
 	"time"
 
-	"github.com/strconv/valyria/middleware"
-
-	"github.com/strconv/valyria/trace"
-
 	"github.com/gin-gonic/gin"
 	"github.com/micro/cli"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/web"
 	"github.com/micro/go-plugins/registry/consul"
 	"github.com/strconv/valyria/config"
+	"github.com/strconv/valyria/middleware"
+	"github.com/strconv/valyria/trace"
 )
 
 const (
@@ -23,10 +21,11 @@ const (
 func NewHTTP() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-	// router.Use() //middleware trace、swagger、
+
 	// 公共中间件
-	router.Use(middleware.TracerWrapper) // trace 包装
-	// todo:: swagger、ginLog
+	// trace
+	router.Use(middleware.TracerWrapper)
+	// todo:: ginLog
 	return router
 }
 
@@ -38,11 +37,11 @@ func InitHTTP(conf *config.Conf, handler *gin.Engine) {
 
 	service := web.NewService(
 		web.Name(conf.Service.Name),
-		web.Registry(reg),
-		web.RegisterTTL(time.Second*REGISTER_TTL),
-		web.RegisterInterval(time.Second*REGISTER_INTERVAL),
 		web.Address(conf.Service.Addr),
-		web.Handler(handler), // use gin's handler
+		web.RegisterTTL(time.Second*REGISTER_TTL),           // 设置注册服务的过期时间
+		web.RegisterInterval(time.Second*REGISTER_INTERVAL), // 设置间隔多久再次注册服务
+		web.Handler(handler),                                // use gin's handler
+		web.Registry(reg),
 	)
 
 	err := service.Init(
