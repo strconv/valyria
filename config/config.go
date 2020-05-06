@@ -25,11 +25,12 @@ type Conf struct {
 	} `yaml:"mysql"`
 
 	Redis struct {
-		Key  string `yaml:"key"`
-		Host string `yaml:"host"`
-		Port string `yaml:"port"`
-		Auth string `yaml:"auth"`
-		Db   int    `yaml:"db"`
+		Host        string `yaml:"host"`
+		Auth        string `yaml:"auth"`
+		DB          int    `yaml:"db"`
+		MaxIdle     int    `yaml:"maxIdle"`
+		IdleTimeout int32  `yaml:"idleTimeout"`
+		MaxActive   int    `yaml:"maxActive"`
 	} `yaml:"redis"`
 
 	JWT struct {

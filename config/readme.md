@@ -53,10 +53,12 @@ mysql:
 
 # redis 配置
 redis:
-  host: 127.0.0.1
-  port: 6379
+  host: 127.0.0.1:6890
   auth: abc123
   db:  0
+  maxIdle: 200 # 最大空闲数
+  idleTimeout: 2000 # 超时时间
+  maxActive: 400 # 连接池最大连接数
 
 # JWT
 jwt:
