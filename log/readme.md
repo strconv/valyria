@@ -30,7 +30,8 @@ func main() {
 
 ## todo
 - 打印频率 day、hour
-- ...
+- 添加`client-log`
+- 添加`gin-log`
 
 ## 参考
 https://www.liwenzhou.com/posts/Go/zap/
