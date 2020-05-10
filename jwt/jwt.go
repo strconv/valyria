@@ -9,7 +9,7 @@ import (
 )
 
 // 参考 https://www.liwenzhou.com/posts/Go/jwt_in_gin/
-const HEADER_TOKEN_KEY = "jwt_token" // http请求体内的token
+const HEADER_TOKEN_KEY = "JWT-Token" // http请求体内的token
 
 var (
 	TokenExpired     = errors.New("token expired")
