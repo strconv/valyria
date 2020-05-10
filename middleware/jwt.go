@@ -40,7 +40,7 @@ func JWTAuth() gin.HandlerFunc {
 }
 
 func respInvalidJWT(c *gin.Context, msg string) {
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusUnauthorized, gin.H{
 		"code": 401,
 		"msg":  "JWT鉴权错误: " + msg,
 	})
