@@ -3,6 +3,8 @@ package server
 import (
 	"time"
 
+	"github.com/strconv/valyria/log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/micro/cli"
 	"github.com/micro/go-micro/registry"
@@ -25,7 +27,7 @@ func NewHTTP() *gin.Engine {
 	// 公共中间件
 	// trace
 	router.Use(middleware.TracerWrapper)
-	// todo:: ginLog
+	router.Use(log.GinLogger())
 	return router
 }
 
