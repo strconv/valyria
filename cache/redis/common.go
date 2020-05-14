@@ -3,8 +3,6 @@ package redis
 import (
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/strconv/valyria/config"
 )
 
@@ -42,20 +40,11 @@ func Delete(key string) error {
 	return _redis.Delete(key)
 }
 
-func HMSet(log *zap.SugaredLogger, key string, fields []string, values []interface{}) error {
-	fs := make([]interface{}, len(fields)*2)
-	for i := 0; i < len(fields)*2; i += 2 {
-		fs[i] = fields[i/2]
-		fs[i+1] = values[i/2]
-	}
-
+func HMSet(key string, fields ...interface{}) (res string, err error) {
+	var reply interface{}
 	keys := []interface{}{key}
 	keys = append(keys, fields)
-	_, err := _redis.Do("HMSET", key, fs)
-	if err != nil {
-		log.Errorf("redis HMSet fail｜error:%s｜", err)
-		return err
-	}
-	log.Infof("redis HMSet|key:%s|fields:%+v|values:%+v|", key, fields, values)
-	return nil
+	reply, err = _redis.Do("HMSET", key, fields)
+	res = reply.(string)
+	return
 }
