@@ -91,3 +91,104 @@ func HMSet(key string, fields ...interface{}) (res string, err error) {
 	res = reply.(string)
 	return
 }
+
+// set
+// 增
+func SAdd(key string, members ...interface{}) (res int, err error) {
+	var reply interface{}
+	keys := []interface{}{key}
+	keys = append(keys, members...)
+	reply, err = _redis.Do("SADD", keys...)
+	if err != nil {
+		return
+	}
+	res = reply.(int)
+	return
+}
+
+// 删
+func SRem(key string, members ...interface{}) (res int, err error) {
+	var reply interface{}
+	keys := []interface{}{key}
+	keys = append(keys, members...)
+	reply, err = _redis.Do("SREM", keys...)
+	if err != nil {
+		return
+	}
+	res = reply.(int)
+	return
+}
+
+// all
+func SMembers(key string) (res []string, err error) {
+	var reply interface{}
+	reply, err = _redis.Do("SMEMBERS", key)
+	if err != nil {
+		return
+	}
+	res = reply.([]string)
+	return
+}
+
+// SortSet
+// 增
+func ZAdd(key string, args ...interface{}) (res int, err error) {
+	var reply interface{}
+	keys := []interface{}{key}
+	keys = append(keys, args...)
+	reply, err = _redis.Do("ZADD", keys...)
+	if err != nil {
+		return
+	}
+	res = reply.(int)
+	return
+}
+
+// 删
+func ZRem(key string, members ...interface{}) (res int, err error) {
+	var reply interface{}
+	keys := []interface{}{key}
+	keys = append(keys, members...)
+
+	reply, err = _redis.Do("ZREM", keys...)
+	if err != nil {
+		return
+	}
+	res = reply.(int)
+	return
+}
+
+// 改(+ / -)
+func ZIncrby(key string, incr int, member string) (res int, err error) {
+	var reply interface{}
+	reply, err = _redis.Do("ZINCRBY", key, incr, member)
+	if err != nil {
+		return
+	}
+	res = reply.(int)
+	return
+}
+
+// 查
+// score
+func ZScore(key, member string) (res float64, err error) {
+	var reply interface{}
+	reply, err = _redis.Do("ZSCORE", key, member)
+	if err != nil {
+		return
+	}
+	res = reply.(float64)
+	return
+}
+
+func ZRange(key string, args ...interface{}) (res []string, err error) {
+	var reply interface{}
+	keys := []interface{}{key}
+	keys = append(keys, args...)
+	reply, err = _redis.Do("ZRANGE", keys...)
+	if err != nil {
+		return
+	}
+	res = reply.([]string)
+	return
+}
