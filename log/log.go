@@ -5,9 +5,8 @@ import (
 	"io"
 	"time"
 
-	"github.com/strconv/valyria/trace"
-
 	"github.com/natefinch/lumberjack"
+	"github.com/strconv/valyria/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

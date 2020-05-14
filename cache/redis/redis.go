@@ -107,3 +107,10 @@ func (r *Redis) Delete(key string) error {
 
 	return nil
 }
+
+func (r *Redis) Do(commandName string, args ...interface{}) (reply interface{}, err error) {
+	conn := r.conn.Get()
+	defer conn.Close()
+
+	return conn.Do(commandName, args...)
+}
