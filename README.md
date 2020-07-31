@@ -9,6 +9,9 @@
 
 在业务开发的过程中遇到的问题，会逐渐下沉基础框架中
 
+# 详细设计
+[go-micro之上的微服务体系建设](https://ariser.cn/blog/micro_service/)
+
 # Features
 - 服务注册: consul
 - 消息队列: kafka
@@ -35,3 +38,5 @@
 - todo
     jwt、自动部署、单元测试、CI/CD、监控
 
+# 介绍设计
+# 介绍
